@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.usersapi.usersapi.dto.LoginRequest;
 import com.usersapi.usersapi.dto.LoginResponse;
-import com.usersapi.usersapi.model.User;
+import com.usersapi.usersapi.model.UserDrimsoft;
 import com.usersapi.usersapi.repository.AuthenticationRepository;
 import com.usersapi.usersapi.repository.UserRepository;
 
@@ -27,7 +27,7 @@ public class AuthController {
         return authenticationRepository
                 .findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword())
                 .map(auth -> {
-                    User user = userRepository.findById(auth.getIdAuthentication()).orElseThrow();
+                    UserDrimsoft user = userRepository.findById(auth.getIdAuthentication()).orElseThrow();
                     return ResponseEntity.ok(
                             new LoginResponse(user.getIdUser(), user.getName(), user.getRole().getName())
                     );

@@ -3,12 +3,12 @@ package com.usersapi.usersapi.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "\"UserStatus\"")
+@Table(name = "userstatus")
 public class UserStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"IDUserStatus\"")
+    @Column(name = "iduserstatus")
     private Integer IDUserStatus;
 
     @Column(name = "name")

@@ -3,12 +3,12 @@ package com.usersapi.usersapi.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "\"Authentication\"")
+@Table(name = "authentication")
 public class Authentication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"IDAuthentication\"")
+    @Column(name = "idauthentication")
     private Integer IDAuthentication;
 
     @Column(name = "email", unique = true)
