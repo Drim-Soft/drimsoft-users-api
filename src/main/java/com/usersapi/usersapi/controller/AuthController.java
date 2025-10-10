@@ -11,7 +11,7 @@ import com.usersapi.usersapi.repository.AuthenticationRepository;
 import com.usersapi.usersapi.repository.UserRepository;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthenticationRepository authenticationRepository;
