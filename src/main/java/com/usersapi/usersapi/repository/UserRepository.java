@@ -1,0 +1,10 @@
+package com.usersapi.usersapi.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.usersapi.usersapi.model.UserDrimsoft;
+
+@Repository
+public interface UserRepository extends JpaRepository<UserDrimsoft, Integer> {
+}

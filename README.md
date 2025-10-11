@@ -4,5 +4,5 @@
 
 docker build -t users-api .
 
-docker run -p 8080:8080 users-api
 
+docker run --env-file .env -p 8080:8080 users-api
