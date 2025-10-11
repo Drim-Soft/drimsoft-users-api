@@ -19,9 +19,6 @@ public class UserDrimsoft {
     @JoinColumn(name = "idrole")
     private Role role;
 
-    @OneToOne
-    @JoinColumn(name = "idauthentication")
-    private Authentication authentication;
 
     @Column(name = "name")
     private String name;
@@ -47,13 +44,6 @@ public class UserDrimsoft {
     }
     public void setRole(Role role) { 
         this.role = role; 
-    }
-
-    public Authentication getAuthentication() { 
-        return authentication; 
-    }
-    public void setAuthentication(Authentication authentication) { 
-        this.authentication = authentication; 
     }
 
     public String getName() { 
