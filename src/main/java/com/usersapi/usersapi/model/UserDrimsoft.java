@@ -3,11 +3,11 @@ package com.usersapi.usersapi.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "userdrimsoft")  // en minúscula y sin comillas
+@Table(name = "userdrimsoft")  
 public class UserDrimsoft {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "iduser")   // también en minúscula
+    @Column(name = "iduser")   
     private Integer idUser;
 
     @ManyToOne
