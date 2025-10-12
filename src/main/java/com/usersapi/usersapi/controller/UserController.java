@@ -40,7 +40,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<UserDrimsoft> deleteUser(@PathVariable Integer id) {
         return userService.findById(id).map(user -> {
-            UserDrimsoft updatedUser = userService.updateStatus(id, 3); 
+            UserDrimsoft updatedUser = userService.updateStatus(id, 3);
             return ResponseEntity.ok(updatedUser);
         }).orElse(ResponseEntity.notFound().build());
     }

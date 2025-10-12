@@ -5,9 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import com.usersapi.usersapi.model.UserDrimsoft;
 
-import java.util.UUID;
-
 @Repository
 public interface UserRepository extends JpaRepository<UserDrimsoft, Integer> {
-    UserDrimsoft findBySupabaseUserId(UUID supabaseUserId);
 }
