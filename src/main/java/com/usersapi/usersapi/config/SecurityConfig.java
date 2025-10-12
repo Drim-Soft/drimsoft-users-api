@@ -12,6 +12,9 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -26,82 +29,80 @@ public class SecurityConfig {
     private String supabaseJwtSecret;
 
     /**
-     * JwtDecoder que valida tokens HMAC usando el secreto de Supabase.
-     * Verifica firma y "exp" por defecto.
+     * ✅ Configuración CORS para permitir peticiones desde el frontend (localhost:3000)
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    /**
+     * ✅ JWT Decoder para validar tokens firmados por Supabase
      */
     @Bean
     public JwtDecoder jwtDecoder() {
-        // Supabase usa HMAC SHA-256 para firmar los JWT (JWT_SECRET)
         byte[] secretBytes = supabaseJwtSecret.getBytes(StandardCharsets.UTF_8);
         SecretKeySpec key = new SecretKeySpec(secretBytes, "HmacSHA256");
-
-        // Validadores adicionales (issuer/audience) si los quieres activar:
-        // jwtDecoder.setJwtValidator(...);
-
         return NimbusJwtDecoder.withSecretKey(key).build();
     }
 
     /**
-     * Converter para convertir claims del JWT a GrantedAuthorities de Spring.
-     * Ajusta el claimName ("role", "user_role", "app_metadata") según tu token.
+     * ✅ Conversor de roles desde claims del JWT
      */
     private JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter defaultGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        // No dependemos del prefijo "SCOPE_" (a menos que uses scopes)
-        defaultGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_"); // prefix para roles
+        defaultGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
 
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(jwt -> {
             Collection<GrantedAuthority> authorities = new ArrayList<>();
 
-            // 1) roles en claim "role" o "user_role"
             if (jwt.getClaim("role") != null) {
-                String role = jwt.getClaimAsString("role");
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + jwt.getClaimAsString("role").toUpperCase()));
             }
+
             if (jwt.getClaim("user_role") != null) {
                 authorities.add(new SimpleGrantedAuthority("ROLE_" + jwt.getClaimAsString("user_role").toUpperCase()));
             }
 
-            // 2) custom claim que contenga una lista de roles: "roles" -> ["admin","editor"]
             Object rolesObj = jwt.getClaim("roles");
-            if (rolesObj instanceof List) {
-                @SuppressWarnings("unchecked")
-                List<String> roles = (List<String>) rolesObj;
-                authorities.addAll(
-                        roles.stream()
-                                .map(r -> new SimpleGrantedAuthority("ROLE_" + r.toUpperCase()))
-                                .toList()
-                );
+            if (rolesObj instanceof List<?> roles) {
+                for (Object role : roles) {
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + role.toString().toUpperCase()));
+                }
             }
 
-            // 3) fallback: usar scope -> SCOPE_* mapping
-            Collection<SimpleGrantedAuthority> scopeAuthorities = defaultGrantedAuthoritiesConverter.convert(jwt)
-                    .stream()
-                    .map(g -> new SimpleGrantedAuthority(g.getAuthority()))
-                    .toList();
-            authorities.addAll(scopeAuthorities);
-
+            authorities.addAll(defaultGrantedAuthoritiesConverter.convert(jwt));
             return authorities;
         });
 
         return converter;
     }
 
+    /**
+     * ✅ Filtro de seguridad principal
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // API REST; si usas cookies, reevalúa
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/public/**", "/auth/**", "/actuator/health").permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                        )
-                );
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 👈 Activamos CORS
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/v1/public/**", "/auth/**", "/actuator/health").permitAll()
+                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+            );
 
         return http.build();
     }
