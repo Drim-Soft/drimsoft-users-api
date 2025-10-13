@@ -1,12 +1,14 @@
 package com.usersapi.usersapi.controller;
 
 
+import com.usersapi.usersapi.util.AuthUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.usersapi.usersapi.model.UserDrimsoft;
 import com.usersapi.usersapi.service.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -53,5 +55,29 @@ public class UserController {
     @PutMapping("/{id}/status/{statusId}")
     public ResponseEntity<UserDrimsoft> updateUserStatus(@PathVariable Integer id, @PathVariable Integer statusId) {
         return ResponseEntity.ok(userService.updateStatus(id, statusId));
+    }
+
+    @GetMapping("/{id}/role")
+    public ResponseEntity<String> getUserRole(@PathVariable Integer id) {
+        try {
+            String roleName = userService.getUserRole(id);
+            return ResponseEntity.ok(roleName);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDrimsoft> getCurrentUser() {
+        String supabaseUserId = AuthUtils.getCurrentUserId();
+        if (supabaseUserId == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        // Buscar en tu base local usando el SupabaseUserID
+        Optional<UserDrimsoft> user = userService.findBySupabaseUserId(supabaseUserId);
+
+        return user.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

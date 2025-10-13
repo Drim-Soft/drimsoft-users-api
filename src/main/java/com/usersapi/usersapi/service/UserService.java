@@ -11,6 +11,7 @@ import com.usersapi.usersapi.repository.UserStatusRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -45,5 +46,20 @@ public class UserService {
         UserStatus status = userStatusRepository.findById(statusId).orElseThrow();
         user.setStatus(status);
         return userRepository.save(user);
+    }
+
+    public String getUserRole(Integer userId) {
+        return userRepository.findById(userId)
+                .map(user -> user.getRole().getName())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + userId));
+    }
+
+    public Optional<UserDrimsoft> findBySupabaseUserId(String supabaseUserId) {
+        try {
+            UUID uuid = UUID.fromString(supabaseUserId);
+            return userRepository.findBySupabaseUserID(uuid);
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
     }
 }

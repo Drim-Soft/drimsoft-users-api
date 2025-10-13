@@ -1,5 +1,6 @@
 package com.usersapi.usersapi.service;
 
+import com.usersapi.usersapi.model.UserDrimsoft;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

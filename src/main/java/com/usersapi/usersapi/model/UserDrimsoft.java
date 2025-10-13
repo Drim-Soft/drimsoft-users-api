@@ -23,6 +23,8 @@ public class UserDrimsoft {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "supabaseuserid")
+    private java.util.UUID supabaseUserID;
 
     // Getters y Setters
     public Integer getIdUser() {
@@ -51,5 +53,13 @@ public class UserDrimsoft {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    public java.util.UUID getSupabaseUserID() {
+        return supabaseUserID;
+    }
+
+    public void setSupabaseUserID(java.util.UUID supabaseUserID) {
+        this.supabaseUserID = supabaseUserID;
     }
 }
