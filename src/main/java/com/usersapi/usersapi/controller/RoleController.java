@@ -17,13 +17,13 @@ public class RoleController {
 
     private final RoleService roleService;
 
-    public RoleController(RoleService roleService) { 
-        this.roleService = roleService; 
+    public RoleController(RoleService roleService) {
+        this.roleService = roleService;
     }
 
     @GetMapping
-    public List<Role> getAllRoles() { 
-        return roleService.findAll(); 
+    public List<Role> getAllRoles() {
+        return roleService.findAll();
     }
 
     @GetMapping("/{id}")
