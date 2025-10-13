@@ -28,9 +28,8 @@ public class SecurityConfig {
     @Value("${supabase.jwt.secret}")
     private String supabaseJwtSecret;
 
-    /**
-     * ✅ Configuración CORS para permitir peticiones desde el frontend (localhost:3000)
-     */
+    // Configuración CORS para permitir peticiones desde el frontend (localhost:3000)
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -44,9 +43,7 @@ public class SecurityConfig {
         return source;
     }
 
-    /**
-     * ✅ JWT Decoder para validar tokens firmados por Supabase
-     */
+    // JWT Decoder para validar tokens firmados por Supabase
     @Bean
     public JwtDecoder jwtDecoder() {
         byte[] secretBytes = supabaseJwtSecret.getBytes(StandardCharsets.UTF_8);
@@ -54,9 +51,8 @@ public class SecurityConfig {
         return NimbusJwtDecoder.withSecretKey(key).build();
     }
 
-    /**
-     * ✅ Conversor de roles desde claims del JWT
-     */
+    //  Conversor de roles desde claims del JWT
+     
     private JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter defaultGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         defaultGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
@@ -87,14 +83,13 @@ public class SecurityConfig {
         return converter;
     }
 
-    /**
-     * ✅ Filtro de seguridad principal
-     */
+    // Filtro de seguridad principal
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 👈 Activamos CORS
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/public/**", "/auth/**", "/actuator/health").permitAll()
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")

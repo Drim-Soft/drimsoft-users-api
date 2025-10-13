@@ -1,6 +1,7 @@
 package com.usersapi.usersapi.model;
 
 import jakarta.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "userdrimsoft")
@@ -23,6 +24,8 @@ public class UserDrimsoft {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "supabaseuserid")
+    private UUID supabaseUserId;
 
     // Getters y Setters
     public Integer getIdUser() {
@@ -51,5 +54,12 @@ public class UserDrimsoft {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    public UUID getSupabaseUserId() {
+        return supabaseUserId;
+    }
+    public void setSupabaseUserId(UUID supabaseUserId) {
+        this.supabaseUserId = supabaseUserId;
     }
 }

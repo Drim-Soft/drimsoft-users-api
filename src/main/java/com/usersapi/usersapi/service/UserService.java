@@ -11,6 +11,7 @@ import com.usersapi.usersapi.repository.UserStatusRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -45,5 +46,9 @@ public class UserService {
         UserStatus status = userStatusRepository.findById(statusId).orElseThrow();
         user.setStatus(status);
         return userRepository.save(user);
+    }
+
+    public Optional<UserDrimsoft> findBySupabaseUserId(UUID supabaseUserId) {
+        return userRepository.findBySupabaseUserId(supabaseUserId);
     }
 }
