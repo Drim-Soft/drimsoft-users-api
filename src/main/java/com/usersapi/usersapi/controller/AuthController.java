@@ -1,5 +1,6 @@
 package com.usersapi.usersapi.controller;
 
+import com.usersapi.usersapi.model.UserDrimsoft;
 import com.usersapi.usersapi.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +39,21 @@ public class AuthController {
     public Mono<ResponseEntity<Map>> me(@RequestHeader("Authorization") String authorization) {
         String token = authorization.replaceFirst("Bearer ", "");
         return authService.getUser(token).map(ResponseEntity::ok);
+    }
+
+    @PatchMapping("/update-profile")
+    public Mono<ResponseEntity<Map<String, Object>>> updateMe(
+            @RequestHeader("Authorization") String authorization,
+            @RequestBody Map<String, Object> body
+    ) {
+        String token = authorization.replaceFirst("Bearer ", "");
+        String name = body.get("name") != null ? body.get("name").toString() : null;
+        String password = body.get("password") != null ? body.get("password").toString() : null;
+
+        return authService.updateProfile(token, name, password)
+                .map(ResponseEntity::ok)
+                .onErrorResume(e -> Mono.just(ResponseEntity.badRequest().body(Map.of(
+                        "error", e.getMessage()
+                ))));
     }
 }
