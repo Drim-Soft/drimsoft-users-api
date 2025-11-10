@@ -1,13 +1,14 @@
 package com.usersapi.usersapi.model;
 
 import jakarta.persistence.*;
+import java.util.UUID;
 
 @Entity
-@Table(name = "userdrimsoft")  
+@Table(name = "userdrimsoft")
 public class UserDrimsoft {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "iduser")   
+    @Column(name = "iduser")
     private Integer idUser;
 
     @ManyToOne
@@ -23,33 +24,42 @@ public class UserDrimsoft {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "supabaseuserid")
+    private UUID supabaseUserId;
 
     // Getters y Setters
-    public Integer getIdUser() { 
-        return idUser; 
+    public Integer getIdUser() {
+        return idUser;
     }
-    public void setIdUser(Integer idUser) { 
-        this.idUser = idUser; 
-    }
-
-    public UserStatus getStatus() { 
-        return status; 
-    }
-    public void setStatus(UserStatus status) { 
-        this.status = status; 
+    public void setIdUser(Integer idUser) {
+        this.idUser = idUser;
     }
 
-    public Role getRole() { 
-        return role; 
+    public UserStatus getStatus() {
+        return status;
     }
-    public void setRole(Role role) { 
-        this.role = role; 
+    public void setStatus(UserStatus status) {
+        this.status = status;
     }
 
-    public String getName() { 
-        return name; 
+    public Role getRole() {
+        return role;
     }
-    public void setName(String name) { 
-        this.name = name; 
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public UUID getSupabaseUserId() {
+        return supabaseUserId;
+    }
+    public void setSupabaseUserId(UUID supabaseUserId) {
+        this.supabaseUserId = supabaseUserId;
     }
 }

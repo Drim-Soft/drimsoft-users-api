@@ -1,6 +1,5 @@
 package com.usersapi.usersapi.controller;
 
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.usersapi.usersapi.model.UserDrimsoft;
@@ -14,10 +13,14 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) { this.userService = userService; }
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
-    public List<UserDrimsoft> getAllUsers() { return userService.findAll(); }
+    public List<UserDrimsoft> getAllUsers() {
+        return userService.findAll();
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDrimsoft> getUserById(@PathVariable Integer id) {
@@ -26,12 +29,28 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDrimsoft createUser(@RequestBody UserDrimsoft user) { return userService.save(user); }
+    public UserDrimsoft createUser(@RequestBody UserDrimsoft user) {
+        return userService.save(user);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDrimsoft> updateUser(@PathVariable Integer id, @RequestBody UserDrimsoft userDetails) {
         return userService.findById(id).map(user -> {
-            user.setName(userDetails.getName());
+            // Solo actualizar si se proporciona
+            if (userDetails.getName() != null) {
+                user.setName(userDetails.getName());
+            }
+
+            // Solo actualizar rol si se proporciona
+            if (userDetails.getRole() != null) {
+                user.setRole(userDetails.getRole());
+            }
+
+            // Solo actualizar estado si se proporciona
+            if (userDetails.getStatus() != null) {
+                user.setStatus(userDetails.getStatus());
+            }
+
             return ResponseEntity.ok(userService.save(user));
         }).orElse(ResponseEntity.notFound().build());
     }
@@ -40,7 +59,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<UserDrimsoft> deleteUser(@PathVariable Integer id) {
         return userService.findById(id).map(user -> {
-            UserDrimsoft updatedUser = userService.updateStatus(id, 3); 
+            UserDrimsoft updatedUser = userService.updateStatus(id, 3);
             return ResponseEntity.ok(updatedUser);
         }).orElse(ResponseEntity.notFound().build());
     }
