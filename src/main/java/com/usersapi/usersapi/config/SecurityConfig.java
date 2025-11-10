@@ -28,7 +28,8 @@ public class SecurityConfig {
     @Value("${supabase.jwt.secret}")
     private String supabaseJwtSecret;
 
-    // Configuración CORS para permitir peticiones desde el frontend (localhost:3000)
+    // Configuración CORS para permitir peticiones desde el frontend
+    // (localhost:3000)
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -52,8 +53,8 @@ public class SecurityConfig {
         return NimbusJwtDecoder.withSecretKey(key).build();
     }
 
-    //  Conversor de roles desde claims del JWT
-     
+    // Conversor de roles desde claims del JWT
+
     private JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter defaultGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         defaultGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
@@ -89,18 +90,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/public/**", "/auth/**", "/actuator/health").permitAll()
-                .requestMatchers("/tickets/**", "/ticket-status/**").permitAll()
-                .requestMatchers("/users/**", "/roles/**", "/user-status/**").authenticated()
-                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-            )
-            .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-            );
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/public/**", "/auth/**", "/actuator/**", "/api/v1/actuator/**")
+                        .permitAll()
+                        .requestMatchers("/tickets/**", "/ticket-status/**").permitAll()
+                        .requestMatchers("/users/**", "/roles/**", "/user-status/**").authenticated()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated())
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
 
         return http.build();
     }
